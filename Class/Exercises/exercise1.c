@@ -49,9 +49,7 @@ void AddName( char **names ) {
     if( buffer[ln] == '\n' )
         buffer[ln] = '\0';
 
-    // printf("%s\n", buffer);
     currentNameSize = strlen(buffer);
-    // printf("currentNameSize: %d\n", currentNameSize );
 
     // realloc to proxy pointer
     char *temporary_names = ( char * )realloc( *names, namesSize + currentNameSize + 2 );
@@ -68,8 +66,6 @@ void AddName( char **names ) {
     *names = strcat( *names, buffer );
     *names = strcat( *names, "-");
     printf("\nNome adicionado!\n\n");
-
-    // printf( "%s\n", *names );
 
 }
 
@@ -102,11 +98,11 @@ void RemoveName( char **names ) {
         }
 
         if( strcmp(nameToRemove, nameCopy ) == 0 ) {
-            printf( "It's in the String!" );
-            printf( "\n%s\n", nameCopy );
+            printf( "\nIt's in the String!\n" );
+            // printf( "\n%s\n", nameCopy );
             
-            printf( "\n%s\n", nameToRemove );
-            isInString = 1;
+            // printf( "\n%s\n", nameToRemove );
+            isInString++;
             nameToremovePosition = namesCounter;
             // namesCounter++;
             // break;
@@ -139,19 +135,122 @@ void RemoveName( char **names ) {
     }
 
     printf( "\nnamescounter: %d\n", namesCounter );
-    printf( "\nPosition: %d\n", nameToremovePosition );
+    printf( "\nPosition: %d\n\n", nameToremovePosition );
 
     if( isInString == 0 ) {
         printf("\nEsse nome não está na string!\n\n");
         return;
-    } else {
+    } else if( isInString > 1 ) {
+        char *newNamesString = ( char * )malloc( strlen( (*names) ) );
+        strcpy( newNamesString, ( *names ) );
+
+        char *newNames = realloc( (*names), 1 );
+        free( (*names) ); 
+        (*names) = newNames;
+        (*names)[0] = '\0';
+        
+
+        printf( "\nstrlen of newNamesString: %ld\n", strlen( newNamesString ) );
+        printf( "\nstrlen of names: %ld\n", strlen( *names ) );
+
+        int choice = 0;
+        printf( "Foram encontrados %d ocorrências desse nome. Deseja remover todas as ocorrências ou apenas a primeira?\n", isInString );
+        printf( "1) Apenas primeira ocorrência\n2) Todas ocorrências\nEscolha: ");
+        scanf( "%d", &choice );
+
+        if( choice == 1) {
+            
+            PrintNames( newNamesString );
+            i = 0, j = 0;
+            int nameAlreadyRemoved = 0;
+            while( i <= ( strlen( newNamesString ) - strlen(nameToRemove)  ) ) {
+                printf( "\nIt's in the String!\n" );
+                nameCopy[j] = newNamesString[i];
+                nameCopy[j+1] = '\0';
+
+
+                if( nameToRemove[j+1] == '\n' ) {
+                    nameToRemove[j+1] = '\0';
+                }
+
+                if( newNamesString[i+1] == '-' ) {
+                    printf( "\nnameCopy: %s\n", nameCopy );
+                    printf( "\nstrcmp: %d\n", strcmp( nameToRemove, nameCopy ) );
+                    if( ( strcmp( nameToRemove, nameCopy ) != 0 ) || ( nameAlreadyRemoved > 0 ) ) {
+                        ( *names ) = realloc( ( *names ), strlen( ( *names ) ) + strlen( nameCopy ) + 1 );
+                        
+                        strcat( ( *names ), nameCopy );
+                        
+                        strcat( ( *names ), "-" );
+                    }
+
+                    if( strcmp(nameToRemove, nameCopy ) == 0 ) {
+                    nameAlreadyRemoved++;
+                    }
+
+                    j = 0;
+                    strcpy( nameCopy, emptyString );
+                    i+=2;
+                } else {
+                    i++;
+                    j++;
+                }
+
+                
+            
+            }
+
+
+        } else if ( choice == 2 ) {
+            
+
+            
+            PrintNames( newNamesString );
+            i = 0, j = 0;
+            while( i <= ( strlen( newNamesString ) - ( strlen( nameToRemove ) * isInString ) ) ) {
+                printf( "\nIt's in the String!\n" );
+                nameCopy[j] = newNamesString[i];
+                nameCopy[j+1] = '\0';
+
+
+                if( nameToRemove[j+1] == '\n' ) {
+                    nameToRemove[j+1] = '\0';
+                }
+
+                if( strcmp(nameToRemove, nameCopy ) == 0 ) {
+                    // printf( "\nIt's in the String!\n" );
+                    
+                }
+
+                if( newNamesString[i+1] == '-' ) {
+                    printf( "\nnameCopy: %s\n", nameCopy );
+                    printf( "\nstrcmp: %d\n", strcmp( nameToRemove, nameCopy ) );
+                    if( strcmp( nameToRemove, nameCopy ) != 0 ) {
+                        ( *names ) = realloc( ( *names ), strlen( ( *names ) ) + strlen( nameCopy ) + 1 );
+                        
+                        strcat( ( *names ), nameCopy );
+                        
+                        strcat( ( *names ), "-" );
+                    }
+
+                    j = 0;
+                    strcpy( nameCopy, emptyString );
+                    i+=2;
+                } else {
+                    i++;
+                    j++;
+                }
+            
+            }
+
+        }
+        
+    }else {
         char *newNamesString = ( char * )malloc( strlen( (*names) ) );
         ( *names ) = ( char * )realloc( newNamesString, strlen( newNamesString ) - strlen( nameToRemove ) - 1 );
-        printf("test");
-    }
-    
-    
-    /*
+        }
+
+        /*
     The idea for this function is the following:
     1. Get the name the user wants to remove
     2. Check if the name (nameToRemove) is in the string
